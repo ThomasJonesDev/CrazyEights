@@ -10,7 +10,7 @@ class Deck:
         self.shuffle_deck(self)
 
     @staticmethod
-    def create_deck(self):
+    def _create_deck(self):
         deck = []
         for suit in Suits:
             for value in range(1, 14):
@@ -18,7 +18,7 @@ class Deck:
         return deck
 
     @staticmethod
-    def shuffle_deck(self):
+    def _shuffle_deck(self):
         random.shuffle(self.deck)
 
     def draw_card(self):
