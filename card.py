@@ -1,6 +1,6 @@
 class Card:
 
-    def __int__(self, card_value, card_suit, card_image):
+    def __init__(self, card_value, card_suit, card_image):
         self.card_value = card_value
         self.card_suit = card_suit
         self.card_image = card_image
