@@ -14,7 +14,7 @@ class Deck:
         deck = []
         for suit in Suits:
             for value in range(1, 14):
-                deck.append(Card(suit, value))
+                deck.append(Card(value, suit))
         return deck
 
     @staticmethod
@@ -23,3 +23,4 @@ class Deck:
 
     def draw_card(self):
         return self.deck.pop()
+
