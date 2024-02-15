@@ -7,9 +7,9 @@ class Card:
         self.card_value = card_value
         self.card_suit = card_suit
         self.card_image = pygame.image.load('images/Playing Cards/card-'
-                                            + self.card_suit.lower()
+                                            + self.card_suit.value
                                             + '-'
-                                            + card_value
+                                            + str(self.card_value)
                                             + '.png')
 
     def get_card_value(self):
