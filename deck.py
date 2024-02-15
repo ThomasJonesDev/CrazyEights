@@ -6,8 +6,8 @@ from card import Card
 class Deck:
 
     def __init__(self):
-        self.deck = self.create_deck(self)
-        self.shuffle_deck(self)
+        self.deck = self._create_deck(self)
+        self._shuffle_deck(self)
 
     @staticmethod
     def _create_deck(self):
