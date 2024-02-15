@@ -13,4 +13,6 @@ class Pile:
         return self.pile[-1]
 
     def get_pile(self):
-        return self.pile
+        if len(self.pile) > 0:
+            return self.pile
+        return None
