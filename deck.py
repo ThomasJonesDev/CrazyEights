@@ -22,5 +22,9 @@ class Deck:
         random.shuffle(self.deck)
 
     def draw_card(self):
-        return self.deck.pop()
+        if len(self.deck) > 0:
+            return self.deck.pop()
+        return None
 
+    def get_deck(self):
+        return self.deck

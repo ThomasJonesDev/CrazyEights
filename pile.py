@@ -11,3 +11,6 @@ class Pile:
 
     def show_top_card(self):
         return self.pile[-1]
+
+    def get_pile(self):
+        return self.pile
