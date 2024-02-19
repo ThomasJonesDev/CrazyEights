@@ -35,3 +35,4 @@ class Card:
             return 12
         elif value == 'K':
             return 13
+        return int(value)
