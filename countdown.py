@@ -1,22 +1,26 @@
 import time
-import math
 
 
 class Countdown:
 
-    def __init__(self):
-        self._start_time = None
-        self._countdown_duration = 30
+    def __init__(self) -> None:
+        self._start_time: float | None = None
+        self._countdown_duration: int = 30
+        self._countdown_active = False
 
-    def get_start_time(self):
+    def get_start_time(self) -> float:
         return self._start_time
 
-    def start_countdown(self):
+    def start_countdown(self) -> None:
+        self._countdown_active = True
         self._start_time = time.time()
 
-    def get_countdown_in_seconds(self):
-        elapsed_time = time.time() - self._start_time
-        return math.ceil(self._countdown_duration - elapsed_time)
+    def get_countdown_in_seconds(self) -> int:
+        elapsed_time = int(time.time() - self._start_time)
+        return max(0, self._countdown_duration - elapsed_time)
 
-    def stop_countdown(self):
-        self._start_time = None
+    def is_countdown_running(self) -> bool:
+        return self._countdown_active
+
+    def stop_countdown(self) -> None:
+        self._countdown_active = False

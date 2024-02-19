@@ -1,18 +1,19 @@
-from card import Card
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from card import Card
 
 
 class Pile:
 
-    def __init__(self):
-        self.pile = []
+    def __init__(self) -> None:
+        self._pile: list['Card'] = []
 
-    def add_to_pile(self, card):
-        self.pile.append(card)
+    def add_to_pile(self, card_to_add: 'Card') -> None:
+        self._pile.append(card_to_add)
 
-    def show_top_card(self):
-        return self.pile[-1]
+    def get_top_card(self) -> 'Card':
+        return self._pile[-1]
 
-    def get_pile(self):
-        if len(self.pile) > 0:
-            return self.pile
-        return None
+    def get_pile(self) -> list['Card']:
+        if len(self._pile) > 0:
+            return self._pile
