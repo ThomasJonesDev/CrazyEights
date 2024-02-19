@@ -27,7 +27,9 @@ class Card:
 
     @staticmethod
     def get_face_card_value(value: chr) -> int:
-        if value == 'J':
+        if value == 'A':
+            return 1
+        elif value == 'J':
             return 11
         elif value == 'Q':
             return 12
