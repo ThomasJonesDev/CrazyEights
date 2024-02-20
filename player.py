@@ -12,6 +12,9 @@ class Player:
     def get_player_hand(self) -> list['Card']:
         return self._player_hand
 
+    def get_how_many_cards_player_has(self) -> int:
+        return len(self._player_hand)
+
     def add_card_to_hand(self, card: 'Card') -> None:
         self._player_hand.append(card)
 
