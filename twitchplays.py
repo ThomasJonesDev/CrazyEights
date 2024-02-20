@@ -15,7 +15,7 @@ GAME_TITLE = "Twitch Plays"
 FPS = 1
 BACKGROUND_COLOUR = [0, 255, 0]
 BACK_OF_CARD = pygame.image.load('images/Playing Cards/card-back1.png')
-NUMBER_OF_STARTING_CARDS = 8
+NUMBER_OF_STARTING_CARDS = 7
 
 
 def game_loop():
