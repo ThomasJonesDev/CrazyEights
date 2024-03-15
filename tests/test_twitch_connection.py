@@ -1,6 +1,6 @@
 import unittest
 
-from twitchconnection import TwitchConnection
+from src.twitchconnection import TwitchConnection
 
 
 class TestTwitchConnection(unittest.TestCase):

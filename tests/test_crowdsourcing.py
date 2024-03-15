@@ -1,12 +1,15 @@
 from unittest import TestCase
-from crowdsourcing import CrowdSourcing
+
+from src.crowdsourcing import CrowdSourcing
 
 
 class TestCrowdSourcing(TestCase):
     def test_convert_answer_string_to_tuple(self):
         input_string = "AS"
-        output_tuple = (1, 'S')
-        self.assertEqual(output_tuple, CrowdSourcing.convert_answer_string_to_tuple(input_string))
+        output_tuple = (1, "S")
+        self.assertEqual(
+            output_tuple, CrowdSourcing.convert_answer_string_to_tuple(input_string)
+        )
 
     def test_filter_answers(self):
         self.assertEqual(None, CrowdSourcing.filter_answers(""))

@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from card import Card
-from crazyeights import CrazyEights
-from player import Player
-from suits import Suits
+from src.card import Card
+from src.crazyeights import CrazyEights
+from src.player import Player
+from src.suits import Suits
 
 
 class TestCrazyEights(TestCase):
