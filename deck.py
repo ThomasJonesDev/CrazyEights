@@ -7,12 +7,12 @@ from suits import Suits
 class Deck:
 
     def __init__(self) -> None:
-        self.deck: list['Card'] = self._create_deck()
+        self.deck: list["Card"] = self._create_deck()
         self._shuffle_deck()
 
     @staticmethod
-    def _create_deck() -> list['Card']:
-        deck: list['Card'] = []
+    def _create_deck() -> list["Card"]:
+        deck: list["Card"] = []
         for suit in Suits:
             for value in range(1, 14):
                 deck.append(Card(value, suit))
@@ -21,9 +21,10 @@ class Deck:
     def _shuffle_deck(self) -> None:
         random.shuffle(self.deck)
 
-    def draw_card(self) -> 'Card':
+    def draw_card(self) -> "Card | None":
         if len(self.deck) > 0:
             return self.deck.pop()
+        return None
 
-    def get_deck(self) -> list['Card']:
+    def get_deck(self) -> list["Card"]:
         return self.deck
