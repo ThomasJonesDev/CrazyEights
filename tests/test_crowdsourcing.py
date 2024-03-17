@@ -1,9 +1,9 @@
-from unittest import TestCase
+import unittest
 
-from src.crowdsourcing import CrowdSourcing
+from src.twitchplays.crowdsourcing import CrowdSourcing
 
 
-class TestCrowdSourcing(TestCase):
+class TestCrowdSourcing(unittest.TestCase):
     def test_convert_answer_string_to_tuple(self):
         input_string = "AS"
         output_tuple = (1, "S")
@@ -18,3 +18,7 @@ class TestCrowdSourcing(TestCase):
         self.assertEqual("10S", CrowdSourcing.filter_answers("10S"))
         self.assertEqual("AS", CrowdSourcing.filter_answers("AS"))
         self.assertEqual("5D", CrowdSourcing.filter_answers("5d"))
+
+
+if __name__ == "__main__":
+    unittest.main()

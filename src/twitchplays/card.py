@@ -13,7 +13,7 @@ class Card:
     def __init__(self, card_value: int, card_suit: "Suits") -> None:
         self._card_value: int = card_value
         self._card_suit: Suits = card_suit
-        image_file_path: str = "images/Playing Cards/"
+        image_file_path: str = "../images/cards/"
         self._card_image: Surface = image.load(
             image_file_path
             + "card-"
