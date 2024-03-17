@@ -70,7 +70,15 @@ class TwitchCrowdsourcing:
         for move in players_moves.values():
             moves_counter[move] = moves_counter[move] + 1
 
-        return max(moves_counter)
+        key_of_max_value: str = ""
+        max_value: int = 0
+
+        for key, value in moves_counter.items():
+            if value > max_value:
+                key_of_max_value = key
+                max_value = value
+
+        return key_of_max_value
 
     @staticmethod
     def create_move_counter_dictionary() -> dict[str, int]:
@@ -95,8 +103,9 @@ class TwitchCrowdsourcing:
         for message in messages:
             split_message: list[str] = message.split(" :")
             temp: list[str] = split_message[0].split("!")
-            username = (temp[0])[1:]
+            username: str = temp[0]
             user_message: str = split_message[1]
+            username = username[1:]
             parsed_input[username] = user_message
 
         return parsed_input
@@ -108,17 +117,17 @@ class TwitchCrowdsourcing:
         """
         filtered_dictionary: dict[str, str] = {}
 
-        for key, value in dictionary.items():
-            inputted_string = value.upper()
-            if len(inputted_string) == 3:
+        for player, answer in dictionary.items():
+            answer = answer.upper()
+            if len(answer) == 3:
                 for suit in SUITS:
-                    if inputted_string[0] == "1" and inputted_string[1] == "0":
-                        if inputted_string[2] == suit:
-                            filtered_dictionary[key] = value
-            elif len(inputted_string) == 2:
+                    if answer[0] == "1" and answer[1] == "0":
+                        if answer[2] == suit:
+                            filtered_dictionary[player] = answer
+            elif len(answer) == 2:
                 for suit in SUITS:
                     for value in VALUES:
-                        if inputted_string[0] == value and inputted_string[1] == suit:
-                            filtered_dictionary[key] = value
+                        if answer[0] == value and answer[1] == suit:
+                            filtered_dictionary[player] = answer
 
         return filtered_dictionary
