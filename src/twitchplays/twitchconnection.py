@@ -27,7 +27,6 @@ class TwitchConnection(Thread):
     def __init__(self) -> None:
         # Global variables
         self.message_log: list[str] = []
-
         # Use .env file to allow for code to be shared without sharing oauth codes
         load_dotenv()
         oauth = f"oauth:{os.getenv('OAUTH')}"
@@ -69,25 +68,19 @@ class TwitchConnection(Thread):
             f"PRIVMSG #{self.channel} :{message}{CRLF}".encode(ENCODING_FORMAT)
         )
 
-    def add_logging_checkpoint(self) -> None:
-        """Creates a checkpoint in self.message_log"""
-        self.message_log.append(LOG_CHECKPOINT)
+    def start_recording_msgs(self) -> None:
+        self.message_log: list[str] = []
 
-    def get_messages_since_checkpoint(self) -> list[str]:
+
+    def get_recorded_msgs(self) -> list[str]:
         """
-        Returns all items in self.message_log since the last checkpoint
+        Returns all items in self.message_log
         """
-        last_checkpoint_index = -1
-        for index, message in enumerate(reversed(self.message_log)):
-            if message == LOG_CHECKPOINT:
-                last_checkpoint_index = index
-                break
+        return self.message_log
 
-        if last_checkpoint_index == -1:
-            last_checkpoint_index = 0
-
-        return self.message_log[last_checkpoint_index + 1 :]
-
+    def disconnect(self) -> None:
+        self.irc.sendall(f"PART{CRLF}".encode(ENCODING_FORMAT))
+        self.irc.close()
 
 # Allow running module independently to allow testing
 if __name__ == "__main__":

@@ -17,3 +17,6 @@ class Pile:
 
     def get_pile(self) -> list["Card"]:
         return self._pile
+    
+    def reset_pile(self) -> None:
+        self._pile = []

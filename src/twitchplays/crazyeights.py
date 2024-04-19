@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 class CrazyEights:
 
     @staticmethod
-    def is_valid_move(selected_card: "Card", top_of_pile: "Card") -> bool:
+    def check_if_valid_move(selected_card: "Card", top_of_pile: "Card") -> bool:
         # Crazy Eights the 8 can always be played
         if selected_card.get_card_value() == 8:
             return True
@@ -38,7 +38,7 @@ class CrazyEights:
         player_hand: list["Card"], top_of_pile: "Card"
     ) -> bool:
         for card in player_hand:
-            if CrazyEights.is_valid_move(card, top_of_pile):
+            if CrazyEights.check_if_valid_move(card, top_of_pile):
                 return True
         return False
 

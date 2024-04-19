@@ -35,7 +35,7 @@ class TwitchCrowdsourcing:
         Tells TwitchConnection to start recording messages in chat
         """
         self.twitch_connection.send_to_chat(START_SUBMITTING_ANSWERS_MESSAGE)
-        self.twitch_connection.add_logging_checkpoint()
+        self.twitch_connection.start_recording_msgs()
 
     def get_submitted_answers(self) -> list[tuple[int, str]]:
         """
@@ -43,7 +43,7 @@ class TwitchCrowdsourcing:
         Calulates which card was selected the most and returns it as a tuple
         """
         self.twitch_connection.send_to_chat(STOP_SUBMITTING_ANSWER_MESSAGE)
-        messages: list[str] = self.twitch_connection.get_messages_since_checkpoint()
+        messages: list[str] = self.twitch_connection.get_recorded_msgs()
         parsed_input: dict[str, str] = TwitchCrowdsourcing._parse_input(messages)
         filtered_input: dict[str, str] = TwitchCrowdsourcing._filter_answers(
             parsed_input
@@ -111,6 +111,11 @@ class TwitchCrowdsourcing:
         ":foo!foo@foo.tmi.twitch.tv PRIVMSG #bar :bleedPurple" -> { "foo" : "bleedPurple" }
         """
         parsed_input: dict[str, str] = {}
+        
+        if len(messages) == 0:
+            return parsed_input
+        print(f"len message {len(messages)}")
+        print(f"message: {messages}")
         for message in messages:
             split_message: list[str] = message.split(" :")
             temp: list[str] = split_message[0].split("!")
@@ -142,3 +147,6 @@ class TwitchCrowdsourcing:
                             filtered_dictionary[player] = answer
 
         return filtered_dictionary
+    
+    def diconnect(self) -> None:
+        self.twitch_connection.disconnect()

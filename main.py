@@ -1,4 +1,4 @@
-from src import twitchplays
+from src.twitchplays import gameloop
 
 if __name__ == "__main__":
-    twitchplays.game_loop()
+    gameloop.GameLoop()

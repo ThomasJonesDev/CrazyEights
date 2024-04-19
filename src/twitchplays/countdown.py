@@ -5,8 +5,7 @@ class Countdown:
 
     def __init__(self) -> None:
         self._start_time: float = -1
-        # self._countdown_duration: int = 30
-        self._countdown_duration: int = 3
+        self._countdown_duration: int = 1
         self._countdown_active = False
 
     def get_start_time(self) -> float:

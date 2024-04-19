@@ -1,115 +1,167 @@
 import pygame
+import os
+import time
 
+from .card import Card
 from .countdown import Countdown
 from .crazyeights import CrazyEights
-from .crowdsourcing import CrowdSourcing
 from .deck import Deck
 from .gamerender import GameRenderer
 from .gamestate import GameState
 from .pile import Pile
 from .player import Player
+from .twitch_crowdsourcing import TwitchCrowdsourcing
 
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
 GAME_TITLE = "Twitch Plays"
 FPS = 1
 BACKGROUND_COLOUR = [0, 255, 0]
-BACK_OF_CARD = pygame.image.load("images/Playing Cards/card-back1.png")
+BACK_OF_CARD = pygame.image.load("src/images/cards/card-back1.png")
 NUMBER_OF_STARTING_CARDS = 7
 
 
-def game_loop():
-    # Initialise the game
-    pygame.init()
-    # Initialise the game render
-    game_renderer = GameRenderer()
-    clock = pygame.time.Clock()
-    # Countdown timer
-    countdown = Countdown()
-    # Connect to Twitch
-    crowdsourcing = CrowdSourcing()
-    # Create players
-    twitch_player = Player()
-    ai_player = Player()
+class GameLoop:
 
-    # Create deck
-    deck = Deck()
+    def __init__(self) -> None:
+        # Init classes
+        pygame.init()
+        self.clock = pygame.time.Clock()
+        self.renderer = GameRenderer()
+        self.tcs = TwitchCrowdsourcing()
+        self.prog_loop()
 
-    # Create Pile
-    pile = Pile()
+    def prog_loop(self) -> None:
+        while True:
+            self.renderer.render_message("Press ENTER to play")
+            for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.close_program()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RETURN:
+                            self.init_new_game()
+                            self.game_loop()
 
-    # Deal out starting cards
-    for _ in range(NUMBER_OF_STARTING_CARDS):
-        twitch_player.add_card_to_hand(deck.draw_card())
-        ai_player.add_card_to_hand(deck.draw_card())
 
-    # Put first card onto the pile
-    pile.add_to_pile(deck.draw_card())
+    def game_loop(self) -> None:
+        while True:
+            # Render the game
+            self.redraw_game()
+            # Process Mouse/Keyboard Input
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.close_program()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return
 
-    # Start game state in player ones(twitch) go.
-    game_state = GameState.TWITCH_PLAYING
+            if self.game_state == GameState.TWITCH_PLAYING:
+                self.twitch_chat_move()
+                if self.has_player_won(self.chat):
+                    self.renderer.render_message("Twitch Chat won!")
+                    time.sleep(3)
+                    return
+            elif self.game_state == GameState.AI_PLAYING:
+                self.ai_move()
+                if self.has_player_won(self.ai):
+                    self.renderer.render_message("The AI won!")
+                    time.sleep(3)
+                    return
+            else:
+                raise Exception
 
-    game_over = False
-    while not game_over:
+            self.clock.tick(FPS)
 
-        # Render the game
-        game_renderer.render(deck, pile, twitch_player, ai_player)
-        if (
-            countdown.is_countdown_running() is True
-            and countdown.get_countdown_in_seconds() >= 0
-        ):
-            game_renderer.render_time_remaining(countdown.get_countdown_in_seconds())
+    def close_program(self) -> None:
+        self.tcs.diconnect()
+        os._exit(0) # used to close listening thread
 
-        # Process Mouse/Keyboard Input
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_over = True
+    def init_new_game(self) -> None:
+        self.countdown = Countdown()
+        self.chat = Player()
+        self.ai = Player()
+        self.deck = Deck()
+        self.pile = Pile()
+        # Deal out starting cards
+        for _ in range(NUMBER_OF_STARTING_CARDS):
+            self.chat.add_card_to_hand(self.deck.draw_card())
+            self.ai.add_card_to_hand(self.deck.draw_card())
+        # Put first card onto the pile
+        self.pile.add_to_pile(self.deck.draw_card())
+        # Start game state in player ones(chat) go.
+        self.game_state = GameState.TWITCH_PLAYING
 
-        # Update Game
-        if game_state is GameState.TWITCH_PLAYING:
+    def ai_move(self) -> None:
+        # PLACE HOLDER FUNCTION
+        self.does_player_have_valid_cards(self.ai)
+        for card in self.ai.get_player_hand():
+            if CrazyEights.check_if_valid_move(card, self.pile.get_top_card()):
+                break  
+        self.pile.add_to_pile(self.ai.play_card(card))
+        self.game_state = GameState.TWITCH_PLAYING
+        return
 
-            # Check if player has any valid moves, if not take card from deck
-            if (
-                CrazyEights.check_if_any_valid_moves(
-                    twitch_player.get_player_hand(), pile.get_top_card()
-                )
-                is False
-            ):
-                twitch_player.add_card_to_hand(deck.draw_card())
-                continue  # continue to skip rest of loop to prevent counter from starting
+    def twitch_chat_move(self) -> None:
+        # If player doesnt have any valid moves keep picking up cards
+        self.does_player_have_valid_cards(self.chat)
 
-            # 30-Second countdown
-            if not countdown.is_countdown_running():
-                countdown.start_countdown()
-            if (
-                countdown.is_countdown_running() is True
-                and countdown.get_countdown_in_seconds() <= 0
-            ):
-                countdown.stop_countdown()
-                # Get the input from Twitch
-                crowdsourced_answer = crowdsourcing.get_crowdsourced_answer()
-                selected_card = None
-                while selected_card == None:
-                    selected_card = CrazyEights.get_select_card(
-                        crowdsourced_answer, twitch_player.get_player_hand()
-                    )
+        if self.countdown.is_countdown_running() is False:
+            self.countdown.start_countdown()
+            self.tcs.start_collecting_answers()
 
-                # If there is a valid card played, then play card and switch to AI's go
-                if CrazyEights.is_valid_move(selected_card, pile.get_top_card()):
-                    pile.add_to_pile(twitch_player.play_card(selected_card))
+        if self.countdown.is_countdown_running() and self.countdown.get_countdown_in_seconds() > 0:
+            self.renderer.render_time_remaining(self.countdown.get_countdown_in_seconds())
 
-                # Check win conditions for Twitch Player
-                if twitch_player.get_how_many_cards_player_has() == 0:
-                    # Send message saying congratulations and break game loop
-                    print(
-                        "Twitch Player wins"
-                    )  # TODO change this to a win message using render class
-                    break
-        elif game_state is GameState.AI_PLAYING:
-            # TODO get input and update game state
-            pass
+        # If 30 second countdown has ended
+        if self.countdown.is_countdown_running() is True and self.countdown.get_countdown_in_seconds() <= 0:
+            self.countdown.stop_countdown()
+            card: Card = self.get_valid_move_from_chat()
+            self.pile.add_to_pile(self.chat.play_card(card))
+            self.game_state = GameState.AI_PLAYING
 
-        # Set to 1 FPS to prevent flickering when the timer is updating, aswell as no reason to update more frequently
-        clock.tick(FPS)
+    def does_player_have_valid_cards(self, player: Player) -> None:
+        while CrazyEights.check_if_any_valid_moves(player.get_player_hand(), self.pile.get_top_card()) is False:
+            time.sleep(1)
+            self.player_draw_card(player)
 
-    # TODO implement game over screen with the winner
+    def get_valid_move_from_chat(self) -> Card:
+        tcs_answers: list[tuple[int, str]] = self.tcs.get_submitted_answers()
+        if len(tcs_answers) > 0:
+            tcs_answer = tcs_answers[0]
+        else:
+            return self.select_random_card()
+
+        for tcs_answer in tcs_answers:
+            # conver card var to Card
+            card: Card | None = self.chat.get_card(tcs_answer)
+            if card is not None:
+                if CrazyEights.check_if_valid_move(card, self.pile.get_top_card()):
+                    return card
+        return self.select_random_card()
+
+    def select_random_card(self) -> Card:
+        chats_hand = self.chat.get_player_hand()
+        for card in chats_hand:
+            if CrazyEights.check_if_valid_move(card, self.pile.get_top_card()) is True:
+                return card
+        return chats_hand[0]  # Will never be reached, stop Not all path ret a value err
+
+    def player_draw_card(self, player: Player) -> Card:
+        player.add_card_to_hand(self.deck.draw_card())
+        deck_size = self.deck.get_num_of_cards_in_deck()
+        if deck_size == 0:
+            pile = self.pile.get_pile()
+            pile_top_card = pile.pop()
+            self.pile.reset_pile()
+            self.pile.add_to_pile(pile_top_card)
+            self.deck.add_to_deck(pile)
+            self.deck._shuffle_deck()
+        self.redraw_game()
+
+    def has_player_won(self, player: Player) -> bool:
+        if player.get_how_many_cards_player_has() == 0:
+            return True
+        return False
+
+    def redraw_game(self) -> None:
+        self.renderer.render(self.deck, self.pile, self.chat, self.ai)

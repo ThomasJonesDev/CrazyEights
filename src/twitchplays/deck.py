@@ -26,3 +26,10 @@ class Deck:
 
     def get_deck(self) -> list["Card"]:
         return self.deck
+
+    def get_num_of_cards_in_deck(self) -> int:
+        return len(self.deck)
+    
+    def add_to_deck(self, cards: list["Card"]) -> None:
+        for card in cards:
+            self.deck.append(card)
