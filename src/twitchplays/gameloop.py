@@ -11,6 +11,7 @@ from .gamestate import GameState
 from .pile import Pile
 from .player import Player
 from .twitch_crowdsourcing import TwitchCrowdsourcing
+from .ai_agent import AiAgent
 
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
@@ -24,7 +25,7 @@ NUMBER_OF_STARTING_CARDS = 7
 class GameLoop:
 
     def __init__(self) -> None:
-        # Init classes
+        # Init classes and global variables
         pygame.init()
         self.clock = pygame.time.Clock()
         self.renderer = GameRenderer()
@@ -77,11 +78,13 @@ class GameLoop:
         os._exit(0) # used to close listening thread
 
     def init_new_game(self) -> None:
+        # Global Vars
         self.countdown = Countdown()
         self.chat = Player()
         self.ai = Player()
         self.deck = Deck()
         self.pile = Pile()
+        self.ai_agent = AiAgent()
         # Deal out starting cards
         for _ in range(NUMBER_OF_STARTING_CARDS):
             self.chat.add_card_to_hand(self.deck.draw_card())
@@ -93,7 +96,7 @@ class GameLoop:
 
     def ai_move(self) -> None:
         # PLACE HOLDER FUNCTION
-        self.does_player_have_valid_cards(self.ai)
+        self.pick_up_card(self.ai)
         for card in self.ai.get_player_hand():
             if CrazyEights.check_if_valid_move(card, self.pile.get_top_card()):
                 break  
@@ -103,7 +106,7 @@ class GameLoop:
 
     def twitch_chat_move(self) -> None:
         # If player doesnt have any valid moves keep picking up cards
-        self.does_player_have_valid_cards(self.chat)
+        self.pick_up_card(self.chat)
 
         if self.countdown.is_countdown_running() is False:
             self.countdown.start_countdown()
@@ -119,7 +122,7 @@ class GameLoop:
             self.pile.add_to_pile(self.chat.play_card(card))
             self.game_state = GameState.AI_PLAYING
 
-    def does_player_have_valid_cards(self, player: Player) -> None:
+    def pick_up_card(self, player: Player) -> None:
         while CrazyEights.check_if_any_valid_moves(player.get_player_hand(), self.pile.get_top_card()) is False:
             time.sleep(1)
             self.player_draw_card(player)

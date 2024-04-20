@@ -46,10 +46,10 @@ class TwitchConnection(Thread):
 
         # Join the chat
         self.irc.sendall(f"JOIN #{self.channel}{CRLF}".encode(ENCODING_FORMAT))
-        listener = Thread(target=self.listen_for_incomming_messages, args=())
+        listener = Thread(target=self.listen_for_incoming_messages, args=())
         listener.start()
 
-    def listen_for_incomming_messages(self) -> None:
+    def listen_for_incoming_messages(self) -> None:
         """
         Recieves any messages from Twitch.tv and stores them in self.message_log
         Is threaded to allow it to run parallel to the game.

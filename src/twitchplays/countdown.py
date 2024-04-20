@@ -4,9 +4,9 @@ import time
 class Countdown:
 
     def __init__(self) -> None:
-        self._start_time: float = -1
+        self._start_time: int = -1
         self._countdown_duration: int = 1
-        self._countdown_active = False
+        self._countdown_active: bool = False
 
     def get_start_time(self) -> float:
         return self._start_time
