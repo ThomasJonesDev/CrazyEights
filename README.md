@@ -28,7 +28,7 @@ Then install the dependencies
 pip install -r requirements.txt
 ```
 
-Next create a .env file that contains the following
+Next create a .env file inside the twitchplays module that contains the following
 ```.env
 OAUTH=<oauth-code>
 CHANNEL=<channel-name>
