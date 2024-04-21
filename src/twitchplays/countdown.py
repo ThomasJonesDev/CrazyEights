@@ -15,7 +15,7 @@ class Countdown:
         self._countdown_active = True
         self._start_time = time.time()
 
-    def get_countdown_in_seconds(self) -> int:
+    def get_seconds_remaining(self) -> int:
         elapsed_time: int = int(time.time() - self._start_time)
         return max(0, self._countdown_duration - elapsed_time)
 

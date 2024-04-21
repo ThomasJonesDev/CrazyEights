@@ -29,8 +29,10 @@ pip install -r requirements.txt
 ```
 
 Next create a .env file that contains the following
+```.env
 OAUTH=<oauth-code>
 CHANNEL=<channel-name>
+```
 
 Where CHANNEL is the name of your twitch account.
 To get your OAUTH code click on the following link, and sign in to Twitch. Once you have done that, you will be redirected to localhost:3000 where the OAUTH code will be in the URL.

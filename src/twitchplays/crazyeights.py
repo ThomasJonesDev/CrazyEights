@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 class CrazyEights:
 
     @staticmethod
-    def check_if_valid_move(selected_card: "Card", top_of_pile: "Card") -> bool:
+    def can_card_be_played(selected_card: "Card", top_of_pile: "Card") -> bool:
         # Crazy Eights the 8 can always be played
         if selected_card.get_card_value() == 8:
             return True
@@ -20,7 +20,7 @@ class CrazyEights:
         return False
 
     @staticmethod
-    def get_select_card(
+    def get_card(
         selected_card: tuple[int, str], players_hand: list["Card"]
     ) -> "Card | None":
         selected_card_value: int = selected_card[0]
@@ -34,16 +34,14 @@ class CrazyEights:
         return None
 
     @staticmethod
-    def check_if_any_valid_moves(
-        player_hand: list["Card"], top_of_pile: "Card"
-    ) -> bool:
+    def can_player_play_a_card(player_hand: list["Card"], top_of_pile: "Card") -> bool:
         for card in player_hand:
-            if CrazyEights.check_if_valid_move(card, top_of_pile):
+            if CrazyEights.can_card_be_played(card, top_of_pile):
                 return True
         return False
 
     @staticmethod
-    def calculate_players_score(players_hand: list["Card"]) -> int:
+    def calculate_player_score(players_hand: list["Card"]) -> int:
         score: int = 0
         for card in players_hand:
             card_value: int = card.get_card_value()

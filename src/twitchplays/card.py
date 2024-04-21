@@ -13,9 +13,9 @@ class Card:
     def __init__(self, card_value: int, card_suit: "Suits") -> None:
         self._card_value: int = card_value
         self._card_suit: Suits = card_suit
-        image_file_path: str = "./src/images/cards/"
+        _image_file_path: str = "./src/images/cards/"
         self._card_image: Surface = image.load(
-            image_file_path
+            _image_file_path
             + "card-"
             + self._card_suit.value
             + "-"
@@ -33,7 +33,7 @@ class Card:
         return self._card_image
 
     @staticmethod
-    def get_face_card_value(value: str) -> int:
+    def get_court_card_value(value: str) -> int:
         value = value.upper()
         if value == "A":
             return 1
