@@ -1,10 +1,11 @@
 from src.twitchplays import gameloop
 
+
 class Main:
-    
-    @staticmethod
-    def __init__():
+
+    def __init__(self):
         if __name__ == "__main__":
             gameloop.GameLoop()
 
-Main.__init__()
+
+Main()
