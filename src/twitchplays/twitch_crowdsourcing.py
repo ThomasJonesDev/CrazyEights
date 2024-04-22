@@ -3,7 +3,9 @@ from .twitchconnection import TwitchConnection
 START_SUBMITTING_MSG: str = (
     "ENTER WHAT MOVE YOU WANT TO PLAY e.g. 'KS' for King of Spades or '10H for Ten of Hearts"
 )
+
 STOP_SUBMITTING_MSG: str = "YOU CAN NO LONGER SUBMIT MOVES"
+
 VALUES: tuple[str, ...] = (
     "A",
     "2",
@@ -19,31 +21,29 @@ VALUES: tuple[str, ...] = (
     "Q",
     "K",
 )
+
 SUITS: tuple[str, ...] = ("S", "C", "H", "D")
 
 
 class TwitchCrowdsourcing:
-    """
-    ...
-    """
+    """Takes the raw data from Twitch IRC servers, then filter and parse results and return a list of moves"""
 
     def __init__(self) -> None:
-        """
-        Establish a connection to twitch to get data from
-        """
+        """Initiate twitch_connection class to connect to Twitch"""
         self.twitch_connection = TwitchConnection()
 
     def start_collecting_answers(self) -> None:
-        """
-        Tells TwitchConnection to start recording messages in chat
+        """Sends message to chat telling users to start entering their choosen card in the chat
+        Empties lists so only recieve messages recieved in the given time.
         """
         self.twitch_connection.send_to_chat(START_SUBMITTING_MSG)
         self.twitch_connection.clear_irc_msgs()
 
     def get_submitted_answers(self) -> list[tuple[int, str]]:
-        """
-        Tells TwitchConnection to stop recording messages from chat
-        Calulates which card was selected the most and returns it as a tuple
+        """Gets raw data from Twitch, call functions to filter and parse data, returns cards in format that the game can use
+
+        Returns:
+            list[tuple[int, str]]: list of cards represented by tuples. Each tuple is the value and suit of a card.
         """
         self.twitch_connection.send_to_chat(STOP_SUBMITTING_MSG)
         messages: list[str] = self.twitch_connection.get_irc_msgs()
@@ -58,8 +58,14 @@ class TwitchCrowdsourcing:
 
     @staticmethod
     def _convert_card_str_to_tuple(card_list: list[str]) -> list[tuple[int, str]]:
-        """
-        ...
+        """Takes the string representation of a card and turns it into a tuple
+        e.g. "5S" -> (5, "S")
+
+        Args:
+            card_list (list[str]): A list of cards represented by cards e.g. "5S"
+
+        Returns:
+            list[tuple[int, str]]: A list of cards represented by tuples e.g. (5,"S")
         """
         tuple_list: list[tuple[int, str]] = []
         for card in card_list:
@@ -72,10 +78,14 @@ class TwitchCrowdsourcing:
 
     @staticmethod
     def _get_list_of_choosen_cards(chat_moves: dict[str, str]) -> list[str]:
-        """
-        ...
-        """
+        """Takes a dictionary of a players name and what card they choose, returns a list of cards sorted by popularity
 
+        Args:
+            chat_moves (dict[str, str]): A dictionary of players and their choosen card e.g. {"Bob": "QS", ...}
+
+        Returns:
+            list[str]: A list of cards represented as strings, orded by most popular (index 0) to least popular (index n)
+        """
         card_tally: dict[str, int] = TwitchCrowdsourcing._create_card_tally()
 
         # Get a list of all submitted cards
@@ -97,8 +107,10 @@ class TwitchCrowdsourcing:
 
     @staticmethod
     def _create_card_tally() -> dict[str, int]:
-        """
-        Creates a directory that contains all 52 cards in a deck, move, num_of_votes
+        """Creates a dictionary that will be used as a tally for each card
+
+        Returns:
+            dict[str, int]: dictionary that contains a string representation and a tally value e.g. {"AC": 0, ...}
         """
         tally: dict[str, int] = {}
         for suit in SUITS:
@@ -108,10 +120,13 @@ class TwitchCrowdsourcing:
 
     @staticmethod
     def _parse_input(messages: list[str]) -> dict[str, str]:
-        """
-        Returns a dictionary that contains username, message
-        e.g.
-        ":foo!foo@foo.tmi.twitch.tv PRIVMSG #bar :bleedPurple" -> { "foo" : "bleedPurple" }
+        """Parses the raw messages from Twitch, returns a dictionary that contains twitch usernames and their message
+        The use of dictionary stops a user from having mulitiple "votes"
+
+        Args:
+            messages (list[str]): e.g. [":foo!foo@foo.tmi.twitch.tv PRIVMSG #bar :bleedPurple"]
+        Returns:
+            dict[str, str]: e.g. {"foo": "bleedPurple"}
         """
         parsed_input: dict[str, str] = {}
 
@@ -129,8 +144,13 @@ class TwitchCrowdsourcing:
 
     @staticmethod
     def _filter_answers(dictionary: dict[str, str]) -> dict[str, str]:
-        """
-        Takes a dictionary and removes all the entries which dont have a valid value
+        """Checks each message in the dictionary and remove any messages that dont follow the required format to choose a card e.g. "5S" for 5 of spades
+
+        Args:
+            dictionary (dict[str, str]): dictionary of twitch-username : message
+
+        Returns:
+            dict[str, str]: filtered dictionary of twitch-username : message
         """
         filtered_dictionary: dict[str, str] = {}
 
@@ -150,7 +170,5 @@ class TwitchCrowdsourcing:
         return filtered_dictionary
 
     def diconnect(self) -> None:
-        """
-        ...
-        """
+        """Tells twitch_connection to diconnect from Twitch IRC servers"""
         self.twitch_connection.disconnect()

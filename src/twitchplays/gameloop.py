@@ -19,16 +19,28 @@ NUMBER_OF_STARTING_CARDS = 7
 
 
 class GameLoop:
+    """_summary_"""
 
     def __init__(self) -> None:
+        """_summary_"""
         # Init classes and global variables
         pygame.init()
         self._clock = pygame.time.Clock()
         self._renderer = GameRenderer()
         self._tcs = TwitchCrowdsourcing()
+
+        self._countdown = Countdown()
+        self._chat = None
+        self._ai = None
+        self._deck = None
+        self._pile = None
+        self._ai_agent = None
+        self._game_state = None
+
         self.prog_loop()
 
     def prog_loop(self) -> None:
+        """_summary_"""
         while True:
             self._renderer.render_message("Press ENTER to play")
             for event in pygame.event.get():
@@ -40,6 +52,7 @@ class GameLoop:
                         self.game_loop()
 
     def game_loop(self) -> None:
+        """_summary_"""
         while True:
             # Render the game
             self._render_game()
@@ -51,28 +64,28 @@ class GameLoop:
                     if event.key == pygame.K_ESCAPE:
                         return
 
-            if self.game_state == CurrentPlayer.TWITCH_PLAYING:
+            if self._game_state == CurrentPlayer.TWITCH_PLAYING:
                 self.twitch__chat_move()
                 if self._check_win_conditions(self._chat):
                     self._renderer.render_message("Twitch _Chat won!")
                     time.sleep(3)
                     return
-            elif self.game_state == CurrentPlayer.AI_PLAYING:
+            elif self._game_state == CurrentPlayer.AI_PLAYING:
                 self._ai_move()
                 if self._check_win_conditions(self._ai):
                     self._renderer.render_message("The _AI won!")
                     time.sleep(3)
                     return
-            else:
-                raise Exception
 
             self._clock.tick(FPS)
 
     def close_program(self) -> None:
+        """_summary_"""
         self._tcs.diconnect()
         os._exit(0)  # used to close listening thread
 
     def init_new_game(self) -> None:
+        """_summary_"""
         # Global Vars
         self._countdown = Countdown()
         self._chat = Player()
@@ -87,19 +100,21 @@ class GameLoop:
         # Put first card onto the _pile
         self._pile.add_to_pile(self._deck.draw_card())
         # Start game state in player ones(_chat) go.
-        self.game_state = CurrentPlayer.TWITCH_PLAYING
+        self._game_state = CurrentPlayer.TWITCH_PLAYING
 
     def _ai_move(self) -> None:
+        """_summary_"""
         # PLACE HOLDER FUNCTION
         self._pick_up_card(self._ai)
         for card in self._ai.get_hand():
             if CrazyEights.can_card_be_played(card, self._pile.get_top_card()):
                 break
         self._pile.add_to_pile(self._ai.remove_card(card))
-        self.game_state = CurrentPlayer.TWITCH_PLAYING
+        self._game_state = CurrentPlayer.TWITCH_PLAYING
         return
 
     def twitch__chat_move(self) -> None:
+        """_summary_"""
         # If player doesnt have any valid moves keep picking up cards
         self._pick_up_card(self._chat)
 
@@ -123,9 +138,14 @@ class GameLoop:
             self._countdown.stop_countdown()
             card: Card = self._get_twitch_choice()
             self._pile.add_to_pile(self._chat.remove_card(card))
-            self.game_state = CurrentPlayer.AI_PLAYING
+            self._game_state = CurrentPlayer.AI_PLAYING
 
     def _pick_up_card(self, player: Player) -> None:
+        """_summary_
+
+        Args:
+            player (Player): _description_
+        """
         while (
             CrazyEights.can_player_play_a_card(
                 player.get_hand(), self._pile.get_top_card()
@@ -136,6 +156,11 @@ class GameLoop:
             self._player_draw_card(player)
 
     def _get_twitch_choice(self) -> Card:
+        """_summary_
+
+        Returns:
+            Card: _description_
+        """
         tcs_answers: list[tuple[int, str]] = self._tcs.get_submitted_answers()
         if len(tcs_answers) > 0:
             tcs_answer = tcs_answers[0]
@@ -151,6 +176,11 @@ class GameLoop:
         return self._get_random_card_to_play()
 
     def _get_random_card_to_play(self) -> Card:
+        """_summary_
+
+        Returns:
+            Card: _description_
+        """
         _chats_hand = self._chat.get_hand()
         for card in _chats_hand:
             if CrazyEights.can_card_be_played(card, self._pile.get_top_card()) is True:
@@ -159,6 +189,14 @@ class GameLoop:
         return _chats_hand[0]
 
     def _player_draw_card(self, player: Player) -> Card:
+        """_summary_
+
+        Args:
+            player (Player): _description_
+
+        Returns:
+            Card: _description_
+        """
         player.add_card(self._deck.draw_card())
         deck_size = self._deck.get_num_of_cards_in_deck()
         if deck_size == 0:
@@ -171,9 +209,18 @@ class GameLoop:
         self._render_game()
 
     def _check_win_conditions(self, player: Player) -> bool:
+        """_summary_
+
+        Args:
+            player (Player): _description_
+
+        Returns:
+            bool: _description_
+        """
         if player.get_num_of_cards() == 0:
             return True
         return False
 
     def _render_game(self) -> None:
+        """_summary_"""
         self._renderer.render(self._deck, self._pile, self._chat, self._ai)

@@ -12,21 +12,14 @@ TWITCH_IRC_PORT = 6667
 
 
 class TwitchConnection(Thread):
-    """
-    Connects and authenitcates with Twitch.tv IRC server, then connects to twitch channel in .env file
+    """Connects and authenitcates with Twitch.tv IRC server, to read and write to chat
 
-    .env FILE REQUIRED: create file in same directory as this module with the following ENCODING
-    OAUTH=<oauth code>
-    CHANNEL=<channel name>
-
-    To get OAUTH CODE use the follow link:
-    https://id.twitch.tv/oauth2/authorize?response_type=token&redirect_uri=http://localhost:3000&client_id=0v3q3zcud5b4x3o7tf4olkc0mt7cpo&scope=chat%3Aread+chat%3Aedit
+    Args:
+        Thread (Thread): TwitchConnection extends Thread
     """
 
     def __init__(self) -> None:
-        """
-        ...
-        """
+        """Using IRC protocol, connect and authenticate with Twitch.tv IRC servers"""
         # Global variables
         self._irc_msgs: list[str] = []
         # Use .env file to allow for code to be shared without sharing oauth codes
@@ -48,13 +41,14 @@ class TwitchConnection(Thread):
 
         # Join the chat
         self._irc.sendall(f"JOIN #{self.channel}{CRLF}".encode(ENCODING))
+        # Create a listener
         listener = Thread(target=self.listen_for_irc_msgs, args=())
         listener.start()
 
     def listen_for_irc_msgs(self) -> None:
-        """
-        Recieves any messages from Twitch.tv and stores them in self._irc_msgs
-        Is threaded to allow it to run parallel to the game.
+        """A listener function on its own thread.
+        If PONG message reply with PING to keep connection alive, otherwise stores any incoming messages to self._irc_msgs.
+        Runs on its own thread to allow rest of program to keep running as socket.recv is a blocking functions
         """
         while True:
             recv_msg: str = self._irc.recv(MAX_BYTES).decode(ENCODING)
@@ -66,27 +60,27 @@ class TwitchConnection(Thread):
                 self._irc_msgs.append(recv_msg)
 
     def send_to_chat(self, message: str) -> None:
-        """
-        ...
+        """Sends a message to the chat
+
+        Args:
+            message (str): message to send to chat
         """
         self._irc.sendall(f"PRIVMSG #{self.channel} :{message}{CRLF}".encode(ENCODING))
 
     def clear_irc_msgs(self) -> None:
-        """
-        ...
-        """
+        """Set self._irc_msgs to a empty list"""
         self._irc_msgs: list[str] = []
 
     def get_irc_msgs(self) -> list[str]:
-        """
-        Returns all items in self._irc_msgs
+        """Returns self._irc_msgs list
+
+        Returns:
+            list[str]: messages in self._irc_msgs.
         """
         return self._irc_msgs
 
     def disconnect(self) -> None:
-        """
-        ...
-        """
+        """Send message to Twitch IRC to diconnect bot. Then closes socket connection"""
         self._irc.sendall(f"PART{CRLF}".encode(ENCODING))
         self._irc.close()
 
