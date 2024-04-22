@@ -30,14 +30,14 @@ class TwitchCrowdsourcing:
 
     def __init__(self) -> None:
         """Initiate twitch_connection class to connect to Twitch"""
-        self.twitch_connection = TwitchConnection()
+        self._twitch_connection = TwitchConnection()
 
     def start_collecting_answers(self) -> None:
         """Sends message to chat telling users to start entering their choosen card in the chat
         Empties lists so only recieve messages recieved in the given time.
         """
-        self.twitch_connection.send_to_chat(START_SUBMITTING_MSG)
-        self.twitch_connection.clear_irc_msgs()
+        self._twitch_connection.send_to_chat(START_SUBMITTING_MSG)
+        self._twitch_connection.clear_irc_msgs()
 
     def get_submitted_answers(self) -> list[tuple[int, str]]:
         """Gets raw data from Twitch, call functions to filter and parse data, returns cards in format that the game can use
@@ -45,8 +45,8 @@ class TwitchCrowdsourcing:
         Returns:
             list[tuple[int, str]]: list of cards represented by tuples. Each tuple is the value and suit of a card.
         """
-        self.twitch_connection.send_to_chat(STOP_SUBMITTING_MSG)
-        messages: list[str] = self.twitch_connection.get_irc_msgs()
+        self._twitch_connection.send_to_chat(STOP_SUBMITTING_MSG)
+        messages: list[str] = self._twitch_connection.get_irc_msgs()
         parsed_input: dict[str, str] = TwitchCrowdsourcing._parse_input(messages)
         filtered_input: dict[str, str] = TwitchCrowdsourcing._filter_answers(
             parsed_input
@@ -171,4 +171,4 @@ class TwitchCrowdsourcing:
 
     def diconnect(self) -> None:
         """Tells twitch_connection to diconnect from Twitch IRC servers"""
-        self.twitch_connection.disconnect()
+        self._twitch_connection.disconnect()

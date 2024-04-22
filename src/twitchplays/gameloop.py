@@ -36,9 +36,9 @@ class GameLoop:
         self._ai_agent = None
         self._game_state = None
 
-        self.prog_loop()
+        self._run_program_loop()
 
-    def prog_loop(self) -> None:
+    def _run_program_loop(self) -> None:
         """
         The program loop, allows for another game to be run after finishing a game
         Can also process user inputs
@@ -48,14 +48,14 @@ class GameLoop:
             self._renderer.render_message("Press ENTER to play")
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.close_program()
+                    self._close_program()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
-                        self.init_new_game()
-                        self.game_loop()
+                        self._init_new_game()
+                        self._run_game_loop()
             self._clock.tick(FPS)
 
-    def game_loop(self) -> None:
+    def _run_game_loop(self) -> None:
         """
         The game loop
         Can process user inputs
@@ -66,19 +66,19 @@ class GameLoop:
             # Process Mouse/Keyboard Input
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.close_program()
+                    self._close_program()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         return
 
             if self._game_state == CurrentPlayer.TWITCH_PLAYING:
-                self.twitch__chat_move()
+                self._get_twitch_move()
                 if self._check_win_conditions(self._chat):
                     self._renderer.render_message("Twitch Chat won!")
                     time.sleep(3)
                     return
             elif self._game_state == CurrentPlayer.AI_PLAYING:
-                self._ai_move()
+                self._get_ai_move()
                 if self._check_win_conditions(self._ai):
                     self._renderer.render_message("The AI won!")
                     time.sleep(3)
@@ -86,12 +86,12 @@ class GameLoop:
 
             self._clock.tick(FPS)
 
-    def close_program(self) -> None:
+    def _close_program(self) -> None:
         """Shuts down the twitch IRC connection then close program & threads"""
         self._tcs.diconnect()
         os._exit(0)  # used to close listening thread
 
-    def init_new_game(self) -> None:
+    def _init_new_game(self) -> None:
         """Initialise variables to set up a new game, and deal out starting cards"""
         # Global Vars
         self._countdown = Countdown()
@@ -109,7 +109,7 @@ class GameLoop:
         # Start game state in player ones(_chat) go.
         self._game_state = CurrentPlayer.TWITCH_PLAYING
 
-    def _ai_move(self) -> None:
+    def _get_ai_move(self) -> None:
         """PLACEHOLDER FUNCTION, finds first playable card in AI hand and plays it"""
         self._pick_up_card(self._ai)
         for card in self._ai.get_hand():
@@ -119,7 +119,7 @@ class GameLoop:
         self._game_state = CurrentPlayer.TWITCH_PLAYING
         return
 
-    def twitch__chat_move(self) -> None:
+    def _get_twitch_move(self) -> None:
         """
         If player doesn't have any cards they can play, pick up cards.
         Then get the choosen card from Twitch and play it
@@ -145,7 +145,7 @@ class GameLoop:
             and self._countdown.get_seconds_remaining() <= 0
         ):
             self._countdown.stop_countdown()
-            card: Card = self._get_twitch_choice()
+            card: Card = self._get_tcs_choice()
             self._pile.add_to_pile(self._chat.remove_card(card))
             self._game_state = CurrentPlayer.AI_PLAYING
 
@@ -164,7 +164,7 @@ class GameLoop:
             self._player_draw_card(player)
             time.sleep(1)  # Delay so each card card being picked us is seen
 
-    def _get_twitch_choice(self) -> Card:
+    def _get_tcs_choice(self) -> Card:
         """
         Use TwitchCrowdsourcing to get a list of cards
         Go through list to find if any choosen cards can be played

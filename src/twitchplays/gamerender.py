@@ -17,8 +17,8 @@ class GameRenderer:
 
     def __init__(self) -> None:
         """Creates the window, and initialises font and caption"""
-        self._window_width: int = 1280
-        self._window_height: int = 720
+        self._window_width: int = 1920
+        self._window_height: int = 1080
         window_caption: str = "Twitch Plays"
         self._back_of_card_image = image.load("./src/images/cards/card-back1.png")
         self._display = display.set_mode((self._window_width, self._window_height))

@@ -25,7 +25,7 @@ class TwitchConnection(Thread):
         # Use .env file to allow for code to be shared without sharing oauth codes
         load_dotenv()
         oauth = f"oauth:{os.getenv('OAUTH')}"
-        self.channel = os.getenv("CHANNEL")
+        self._channel = os.getenv("CHANNEL")
 
         # Connect the bot to the channel
         self._irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,12 +40,12 @@ class TwitchConnection(Thread):
         self._irc_msgs.append(recv_msg)
 
         # Join the chat
-        self._irc.sendall(f"JOIN #{self.channel}{CRLF}".encode(ENCODING))
+        self._irc.sendall(f"JOIN #{self._channel}{CRLF}".encode(ENCODING))
         # Create a listener
-        listener = Thread(target=self.listen_for_irc_msgs, args=())
+        listener = Thread(target=self._listen_for_irc_msgs, args=())
         listener.start()
 
-    def listen_for_irc_msgs(self) -> None:
+    def _listen_for_irc_msgs(self) -> None:
         """A listener function on its own thread.
         If PONG message reply with PING to keep connection alive, otherwise stores any incoming messages to self._irc_msgs.
         Runs on its own thread to allow rest of program to keep running as socket.recv is a blocking functions
@@ -65,7 +65,7 @@ class TwitchConnection(Thread):
         Args:
             message (str): message to send to chat
         """
-        self._irc.sendall(f"PRIVMSG #{self.channel} :{message}{CRLF}".encode(ENCODING))
+        self._irc.sendall(f"PRIVMSG #{self._channel} :{message}{CRLF}".encode(ENCODING))
 
     def clear_irc_msgs(self) -> None:
         """Set self._irc_msgs to a empty list"""
