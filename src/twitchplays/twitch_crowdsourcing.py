@@ -23,6 +23,9 @@ SUITS: tuple[str, ...] = ("S", "C", "H", "D")
 
 
 class TwitchCrowdsourcing:
+    """
+    ...
+    """
 
     def __init__(self) -> None:
         """
@@ -147,4 +150,7 @@ class TwitchCrowdsourcing:
         return filtered_dictionary
 
     def diconnect(self) -> None:
+        """
+        ...
+        """
         self.twitch_connection.disconnect()
