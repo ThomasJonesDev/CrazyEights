@@ -17,8 +17,8 @@ class GameRenderer:
 
     def __init__(self) -> None:
         """Creates the window, and initialises font and caption"""
-        self._window_width: int = 1920
-        self._window_height: int = 1080
+        self._window_width: int = 1280
+        self._window_height: int = 720
         window_caption: str = "Twitch Plays"
         self._back_of_card_image = image.load("./src/images/cards/card-back1.png")
         self._display = display.set_mode((self._window_width, self._window_height))
@@ -79,6 +79,8 @@ class GameRenderer:
     def draw_background(self) -> None:
         """Draws the background"""
         background_colour: tuple[int, int, int] = (0, 255, 0)
+        # Get size of back ground
+        (self._window_width, self._window_height) = display.get_surface().get_size()
         self._display.fill(background_colour)
 
     def _draw_deck(self, game_deck: list["Card"]) -> None:

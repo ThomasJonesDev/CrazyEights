@@ -44,6 +44,7 @@ class GameLoop:
         Can also process user inputs
         """
         while True:
+            self._renderer.draw_background()
             self._renderer.render_message("Press ENTER to play")
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -52,6 +53,7 @@ class GameLoop:
                     if event.key == pygame.K_RETURN:
                         self.init_new_game()
                         self.game_loop()
+            self._clock.tick(FPS)
 
     def game_loop(self) -> None:
         """

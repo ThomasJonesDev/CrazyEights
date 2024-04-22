@@ -5,7 +5,7 @@ class CurrentPlayer(Enum):
     """Enum to represent which player turn it currently is
 
     Args:
-        Enum (_type_): _description_
+        Enum (int): represent which player turn it currently is
     """
 
     AI_PLAYING = 0
