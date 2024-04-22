@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class CurrentPlayer(Enum):
-    """_summary_
+    """Enum to represent which player turn it currently is
 
     Args:
         Enum (_type_): _description_

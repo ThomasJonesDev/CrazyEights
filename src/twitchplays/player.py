@@ -7,12 +7,10 @@ if TYPE_CHECKING:
 
 
 class Player:
-    """A instance of a player. Contains players hand and useful functions
-    """
+    """A instance of a player. Contains players hand and useful functions"""
 
-    def __init__(self) -> None
-        """Initialise the players hand
-        """
+    def __init__(self) -> None:
+        """Initialise the players hand"""
         self._player_hand: list["Card"] = []
 
     def get_hand(self) -> list["Card"]:

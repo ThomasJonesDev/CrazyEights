@@ -5,22 +5,18 @@ if TYPE_CHECKING:
 
 
 class CrazyEights:
-    """_summary_
-
-    Returns:
-        _type_: _description_
-    """
+    """class of static functions to check game rules"""
 
     @staticmethod
     def can_card_be_played(selected_card: "Card", top_of_pile: "Card") -> bool:
-        """_summary_
+        """Checks a card with the card on top of the pile, to see if it can be played (put onto the top of the pile)
 
         Args:
-            selected_card (Card): _description_
-            top_of_pile (Card): _description_
+            selected_card (Card): card to check
+            top_of_pile (Card): card on the top of the pile
 
         Returns:
-            bool: _description_
+            bool: return True if card can be played, else returns Flase
         """
         # Crazy Eights the 8 can always be played
         if selected_card.get_card_value() == 8:
@@ -37,14 +33,14 @@ class CrazyEights:
     def get_card(
         selected_card: tuple[int, str], players_hand: list["Card"]
     ) -> "Card | None":
-        """_summary_
+        """Gets the card object from a players hand, that matches the card represented by a tuple
 
         Args:
-            selected_card (tuple[int, str]): _description_
-            players_hand (list[&quot;Card&quot;]): _description_
+            selected_card (tuple[int, str]): Card represented as a tuple e.g. (5, D)
+            players_hand (list[Card]): list of card object in hand
 
         Returns:
-            Card | None: _description_
+            Card | None: If card object is in hand return object, else return None
         """
         selected_card_value: int = selected_card[0]
         selected_card_suit: str = selected_card[1].upper()
@@ -58,14 +54,14 @@ class CrazyEights:
 
     @staticmethod
     def can_player_play_a_card(player_hand: list["Card"], top_of_pile: "Card") -> bool:
-        """_summary_
+        """Checks all the cards in a players hand to see if any of them can be played
 
         Args:
-            player_hand (list[&quot;Card&quot;]): _description_
-            top_of_pile (Card): _description_
+            player_hand (list[Card]): list of cards in players hand
+            top_of_pile (Card): card that is on the top of the pile
 
         Returns:
-            bool: _description_
+            bool: True if there is a card that can be played, otherwiser return false
         """
         for card in player_hand:
             if CrazyEights.can_card_be_played(card, top_of_pile):
@@ -74,13 +70,13 @@ class CrazyEights:
 
     @staticmethod
     def calculate_player_score(players_hand: list["Card"]) -> int:
-        """_summary_
+        """calculates a score based on what cards are in a players hand
 
         Args:
-            players_hand (list[&quot;Card&quot;]): _description_
+            players_hand (list[Card]): list of cards in hand
 
         Returns:
-            int: _description_
+            int: score
         """
         score: int = 0
         for card in players_hand:

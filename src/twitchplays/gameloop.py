@@ -19,17 +19,16 @@ NUMBER_OF_STARTING_CARDS = 7
 
 
 class GameLoop:
-    """_summary_"""
+    """Where the program and game loop runs"""
 
     def __init__(self) -> None:
-        """_summary_"""
-        # Init classes and global variables
+        """Initiate instances and global variables"""
         pygame.init()
         self._clock = pygame.time.Clock()
         self._renderer = GameRenderer()
         self._tcs = TwitchCrowdsourcing()
-
         self._countdown = Countdown()
+
         self._chat = None
         self._ai = None
         self._deck = None
@@ -40,7 +39,10 @@ class GameLoop:
         self.prog_loop()
 
     def prog_loop(self) -> None:
-        """_summary_"""
+        """
+        The program loop, allows for another game to be run after finishing a game
+        Can also process user inputs
+        """
         while True:
             self._renderer.render_message("Press ENTER to play")
             for event in pygame.event.get():
@@ -52,7 +54,10 @@ class GameLoop:
                         self.game_loop()
 
     def game_loop(self) -> None:
-        """_summary_"""
+        """
+        The game loop
+        Can process user inputs
+        """
         while True:
             # Render the game
             self._render_game()
@@ -67,25 +72,25 @@ class GameLoop:
             if self._game_state == CurrentPlayer.TWITCH_PLAYING:
                 self.twitch__chat_move()
                 if self._check_win_conditions(self._chat):
-                    self._renderer.render_message("Twitch _Chat won!")
+                    self._renderer.render_message("Twitch Chat won!")
                     time.sleep(3)
                     return
             elif self._game_state == CurrentPlayer.AI_PLAYING:
                 self._ai_move()
                 if self._check_win_conditions(self._ai):
-                    self._renderer.render_message("The _AI won!")
+                    self._renderer.render_message("The AI won!")
                     time.sleep(3)
                     return
 
             self._clock.tick(FPS)
 
     def close_program(self) -> None:
-        """_summary_"""
+        """Shuts down the twitch IRC connection then close program & threads"""
         self._tcs.diconnect()
         os._exit(0)  # used to close listening thread
 
     def init_new_game(self) -> None:
-        """_summary_"""
+        """Initialise variables to set up a new game, and deal out starting cards"""
         # Global Vars
         self._countdown = Countdown()
         self._chat = Player()
@@ -103,20 +108,22 @@ class GameLoop:
         self._game_state = CurrentPlayer.TWITCH_PLAYING
 
     def _ai_move(self) -> None:
-        """_summary_"""
-        # PLACE HOLDER FUNCTION
-        self._pick_up_cards(self._ai)
+        """PLACEHOLDER FUNCTION, finds first playable card in AI hand and plays it"""
+        self._pick_up_card(self._ai)
         for card in self._ai.get_hand():
             if CrazyEights.can_card_be_played(card, self._pile.get_top_card()):
                 self._pile.add_to_pile(self._ai.remove_card(card))
                 break
-        self.game_state = CurrentPlayer.TWITCH_PLAYING
+        self._game_state = CurrentPlayer.TWITCH_PLAYING
         return
 
     def twitch__chat_move(self) -> None:
-        """_summary_"""
+        """
+        If player doesn't have any cards they can play, pick up cards.
+        Then get the choosen card from Twitch and play it
+        """
         # If player doesnt have any valid moves keep picking up cards
-        self._pick_up_cards(self._chat)
+        self._pick_up_card(self._chat)
 
         if self._countdown.is_countdown_running() is False:
             self._countdown.start_countdown()
@@ -141,10 +148,10 @@ class GameLoop:
             self._game_state = CurrentPlayer.AI_PLAYING
 
     def _pick_up_card(self, player: Player) -> None:
-        """_summary_
+        """Pick up cards until player has a playable card
 
         Args:
-            player (Player): _description_
+            player (Player): player object, to add card to
         """
         while (
             CrazyEights.can_player_play_a_card(
@@ -152,14 +159,17 @@ class GameLoop:
             )
             is False
         ):
-            time.sleep(1)
             self._player_draw_card(player)
+            time.sleep(1)  # Delay so each card card being picked us is seen
 
     def _get_twitch_choice(self) -> Card:
-        """_summary_
+        """
+        Use TwitchCrowdsourcing to get a list of cards
+        Go through list to find if any choosen cards can be played
+        If there is no card in the list that can be played go through Twitch hand and find first card that can be played
 
         Returns:
-            Card: _description_
+            Card: card object to be played
         """
         tcs_answers: list[tuple[int, str]] = self._tcs.get_submitted_answers()
         if len(tcs_answers) > 0:
@@ -176,10 +186,10 @@ class GameLoop:
         return self._get_random_card_to_play()
 
     def _get_random_card_to_play(self) -> Card:
-        """_summary_
+        """Loop through cards in Twitch hand until coming accross a card that can be played
 
         Returns:
-            Card: _description_
+            Card: card object that can be played
         """
         _chats_hand = self._chat.get_hand()
         for card in _chats_hand:
@@ -189,6 +199,13 @@ class GameLoop:
         return _chats_hand[0]
 
     def _player_draw_card(self, player: Player) -> None:
+        """
+        Player takes a card from the top of the deck
+        If player takes the last card from the deck, replenish deck from pile and shuffle
+
+        Args:
+            player (Player): player object of player drawing a card
+        """
         player.add_card(self._deck.draw_card())
         deck_size = self._deck.get_num_of_cards_in_deck()
         if deck_size == 0:
@@ -197,22 +214,22 @@ class GameLoop:
             self._pile.empty_pile()
             self._pile.add_to_pile(pile_top_card)
             self._deck.add_to_deck(_pile)
-            self._deck._shuffle_deck()
+            self._deck.shuffle_deck()
         self._render_game()
 
     def _check_win_conditions(self, player: Player) -> bool:
-        """_summary_
+        """Checks if player has no cards in their hand
 
         Args:
-            player (Player): _description_
+            player (Player): player object to check hand
 
         Returns:
-            bool: _description_
+            bool: if the player has won, by having no cards in hand. True for won, False not not won.
         """
         if player.get_num_of_cards() == 0:
             return True
         return False
 
     def _render_game(self) -> None:
-        """_summary_"""
+        """function that calls for game to be rerendered"""
         self._renderer.render(self._deck, self._pile, self._chat, self._ai)

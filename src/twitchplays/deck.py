@@ -5,19 +5,19 @@ from .suits import Suits
 
 
 class Deck:
-    """_summary_"""
+    """An instance of the Deck, with useful functions"""
 
     def __init__(self) -> None:
-        """_summary_"""
+        """Creates the Deck, and shuffles it"""
         self._deck: list["Card"] = self._create_deck()
-        self._shuffle_deck()
+        self.shuffle_deck()
 
     @staticmethod
     def _create_deck() -> list["Card"]:
-        """_summary_
+        """Add all 52 cards to the deck
 
         Returns:
-            _type_: _description_
+            list[Card]: deck list with all 52 playing cards
         """
         _deck: list["Card"] = []
         for suit in Suits:
@@ -25,39 +25,39 @@ class Deck:
                 _deck.append(Card(value, suit))
         return _deck
 
-    def _shuffle_deck(self) -> None:
-        """_summary_"""
+    def shuffle_deck(self) -> None:
+        """randomly shuffles the deck"""
         random.shuffle(self._deck)
 
     def draw_card(self) -> "Card":
-        """_summary_
+        """draw a card from the top of the deck
 
         Returns:
-            Card: _description_
+            Card: card object drawn from deck
         """
         return self._deck.pop()
 
     def get_deck(self) -> list["Card"]:
-        """_summary_
+        """Gets the entire Deck
 
         Returns:
-            _type_: _description_
+            List[Card]: returns the entire list of card objects
         """
         return self._deck
 
     def get_num_of_cards_in_deck(self) -> int:
-        """_summary_
+        """Gets how many cards are remaining in the deck
 
         Returns:
-            int: _description_
+            int: number of cards in the deck
         """
         return len(self._deck)
 
     def add_to_deck(self, cards: list["Card"]) -> None:
-        """_summary_
+        """Adds card objects to the deck (replenish deck when empty)
 
         Args:
-            cards (list[&quot;Card&quot;]): _description_
+            cards (list[Card]): List of card objects to add to deck
         """
         for card in cards:
             self._deck.append(card)
