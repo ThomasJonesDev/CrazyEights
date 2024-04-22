@@ -47,8 +47,10 @@ class TwitchConnection(Thread):
 
     def _listen_for_irc_msgs(self) -> None:
         """A listener function on its own thread.
-        If PONG message reply with PING to keep connection alive, otherwise stores any incoming messages to self._irc_msgs.
-        Runs on its own thread to allow rest of program to keep running as socket.recv is a blocking functions
+        If incomming message is PING reply with PONG to keep connection alive,
+        otherwise stores any incoming messages to self._irc_msgs.
+        Function runs on its own thread to allow rest of program to keep running
+        as socket.recv is a blocking functions
         """
         while True:
             recv_msg: str = self._irc.recv(MAX_BYTES).decode(ENCODING)

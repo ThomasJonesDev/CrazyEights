@@ -34,7 +34,7 @@ class GameLoop:
         self._deck = None
         self._pile = None
         self._ai_agent = None
-        self._game_state = None
+        self._curr_player = None
 
         self._run_program_loop()
 
@@ -71,13 +71,13 @@ class GameLoop:
                     if event.key == pygame.K_ESCAPE:
                         return
 
-            if self._game_state == CurrentPlayer.TWITCH_PLAYING:
+            if self._curr_player == CurrentPlayer.TWITCH_PLAYING:
                 self._get_twitch_move()
                 if self._check_win_conditions(self._chat):
                     self._renderer.render_message("Twitch Chat won!")
                     time.sleep(3)
                     return
-            elif self._game_state == CurrentPlayer.AI_PLAYING:
+            elif self._curr_player == CurrentPlayer.AI_PLAYING:
                 self._get_ai_move()
                 if self._check_win_conditions(self._ai):
                     self._renderer.render_message("The AI won!")
@@ -107,7 +107,7 @@ class GameLoop:
         # Put first card onto the _pile
         self._pile.add_to_pile(self._deck.draw_card())
         # Start game state in player ones(_chat) go.
-        self._game_state = CurrentPlayer.TWITCH_PLAYING
+        self._curr_player = CurrentPlayer.TWITCH_PLAYING
 
     def _get_ai_move(self) -> None:
         """PLACEHOLDER FUNCTION, finds first playable card in AI hand and plays it"""
@@ -116,7 +116,7 @@ class GameLoop:
             if CrazyEights.can_card_be_played(card, self._pile.get_top_card()):
                 self._pile.add_to_pile(self._ai.remove_card(card))
                 break
-        self._game_state = CurrentPlayer.TWITCH_PLAYING
+        self._curr_player = CurrentPlayer.TWITCH_PLAYING
         return
 
     def _get_twitch_move(self) -> None:
@@ -147,7 +147,7 @@ class GameLoop:
             self._countdown.stop_countdown()
             card: Card = self._get_tcs_choice()
             self._pile.add_to_pile(self._chat.remove_card(card))
-            self._game_state = CurrentPlayer.AI_PLAYING
+            self._curr_player = CurrentPlayer.AI_PLAYING
 
     def _pick_up_card(self, player: Player) -> None:
         """Pick up cards until player has a playable card
