@@ -75,7 +75,7 @@ class TwitchConnection(Thread):
         """
         ...
         """
-        self._irc_msgs: list[str] = []
+        self._irc_msgs = []
 
     def get_irc_msgs(self) -> list[str]:
         """
