@@ -105,18 +105,18 @@ class GameLoop:
     def _ai_move(self) -> None:
         """_summary_"""
         # PLACE HOLDER FUNCTION
-        self._pick_up_card(self._ai)
+        self._pick_up_cards(self._ai)
         for card in self._ai.get_hand():
             if CrazyEights.can_card_be_played(card, self._pile.get_top_card()):
+                self._pile.add_to_pile(self._ai.remove_card(card))
                 break
-        self._pile.add_to_pile(self._ai.remove_card(card))
-        self._game_state = CurrentPlayer.TWITCH_PLAYING
+        self.game_state = CurrentPlayer.TWITCH_PLAYING
         return
 
     def twitch__chat_move(self) -> None:
         """_summary_"""
         # If player doesnt have any valid moves keep picking up cards
-        self._pick_up_card(self._chat)
+        self._pick_up_cards(self._chat)
 
         if self._countdown.is_countdown_running() is False:
             self._countdown.start_countdown()
@@ -188,15 +188,7 @@ class GameLoop:
         # Will never be reached, stop Not all path ret a value err
         return _chats_hand[0]
 
-    def _player_draw_card(self, player: Player) -> Card:
-        """_summary_
-
-        Args:
-            player (Player): _description_
-
-        Returns:
-            Card: _description_
-        """
+    def _player_draw_card(self, player: Player) -> None:
         player.add_card(self._deck.draw_card())
         deck_size = self._deck.get_num_of_cards_in_deck()
         if deck_size == 0:
