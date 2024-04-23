@@ -131,18 +131,10 @@ class GameLoop:
             self._countdown.start_countdown()
             self._tcs.start_collecting_answers()
 
-        # if (
-        #     self._countdown.is_countdown_running()
-        #     and self._countdown.get_seconds_remaining() > 0
-        # ):
-        #     self._renderer.render_time_remaining(
-        #         self._countdown.get_seconds_remaining()
-        #     )
-
         # If 30 second _countdown has ended
         if (
             self._countdown.is_countdown_running() is True
-            and self._countdown.get_seconds_remaining() <= 0
+            and self._countdown.get_seconds_remaining() == 0
         ):
             self._countdown.stop_countdown()
             card: Card = self._get_tcs_choice()

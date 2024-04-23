@@ -1,3 +1,4 @@
+import math
 import time
 
 
@@ -21,8 +22,8 @@ class Countdown:
         Returns:
             int: The number of seconds remaining
         """
-        elapsed_time: float = float(time.time() - self._start_time)
-        return max(0, int(self._countdown_duration - elapsed_time))
+        elapsed_time: int = math.floor(float(time.time() - self._start_time))
+        return max(0, self._countdown_duration - elapsed_time)
 
     def is_countdown_running(self) -> bool:
         """Checks if the countdown is currently running
