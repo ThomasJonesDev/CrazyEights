@@ -117,7 +117,9 @@ class GameRenderer:
         y: float = self._window_height * 0.1
         text_colour: tuple[int, int, int] = (255, 0, 0)
         time_text: Surface = self._text_font.render(
-            "Time remaining to select a card is: " + str(time_in_seconds) + " seconds.",
+            "Time remaining to select a card is: "
+            + str(time_in_seconds + 1)
+            + " seconds.",
             True,
             text_colour,
         )

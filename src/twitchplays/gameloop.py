@@ -14,7 +14,7 @@ from .pile import Pile
 from .player import Player
 from .twitch_crowdsourcing import TwitchCrowdsourcing
 
-FPS = 1
+FPS = 8
 NUMBER_OF_STARTING_CARDS = 7
 
 
@@ -53,7 +53,7 @@ class GameLoop:
                     if event.key == pygame.K_RETURN:
                         self._init_new_game()
                         self._run_game_loop()
-            self._clock.tick(FPS)
+            #  self._clock.tick(FPS)
 
     def _run_game_loop(self) -> None:
         """
@@ -75,13 +75,13 @@ class GameLoop:
                 self._get_twitch_move()
                 if self._check_win_conditions(self._chat):
                     self._renderer.render_message("Twitch Chat won!")
-                    time.sleep(3)
+                    time.sleep(5)
                     return
             elif self._curr_player == CurrentPlayer.AI_PLAYING:
                 self._get_ai_move()
                 if self._check_win_conditions(self._ai):
                     self._renderer.render_message("The AI won!")
-                    time.sleep(3)
+                    time.sleep(5)
                     return
 
             self._clock.tick(FPS)
@@ -131,13 +131,13 @@ class GameLoop:
             self._countdown.start_countdown()
             self._tcs.start_collecting_answers()
 
-        if (
-            self._countdown.is_countdown_running()
-            and self._countdown.get_seconds_remaining() > 0
-        ):
-            self._renderer.render_time_remaining(
-                self._countdown.get_seconds_remaining()
-            )
+        # if (
+        #     self._countdown.is_countdown_running()
+        #     and self._countdown.get_seconds_remaining() > 0
+        # ):
+        #     self._renderer.render_time_remaining(
+        #         self._countdown.get_seconds_remaining()
+        #     )
 
         # If 30 second _countdown has ended
         if (
@@ -162,7 +162,7 @@ class GameLoop:
             is False
         ):
             self._player_draw_card(player)
-            time.sleep(1)  # Delay so each card card being picked us is seen
+            self._render_game()  # Render extra frame to render card
 
     def _get_tcs_choice(self) -> Card:
         """
@@ -217,7 +217,7 @@ class GameLoop:
             self._pile.add_to_pile(pile_top_card)
             self._deck.add_to_deck(_pile)
             self._deck.shuffle_deck()
-        self._render_game()
+        self._render_game()  # re-render to show new card
 
     def _check_win_conditions(self, player: Player) -> bool:
         """Checks if player has no cards in their hand
@@ -233,5 +233,16 @@ class GameLoop:
         return False
 
     def _render_game(self) -> None:
-        """function that calls for game to be rerendered"""
-        self._renderer.render(self._deck, self._pile, self._chat, self._ai)
+        """
+        function that calls for game to be rendered
+        Spends 1 second just rendering to give a pause between actions,
+        without pausing rendering
+        """
+        start_time = time.time()
+        while time.time() - start_time < 0.2:
+            self._renderer.render(self._deck, self._pile, self._chat, self._ai)
+            if self._countdown.is_countdown_running():
+                self._renderer.render_time_remaining(
+                    self._countdown.get_seconds_remaining()
+                )
+            self._clock.tick(FPS)
