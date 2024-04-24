@@ -160,7 +160,8 @@ class GameLoop:
         """
         Use TwitchCrowdsourcing to get a list of cards
         Go through list to find if any choosen cards can be played
-        If there is no card in the list that can be played go through Twitch hand and find first card that can be played
+        If there is no card in the list that can be played go through
+        Twitch hand and find first card that can be played
 
         Returns:
             Card: card object to be played
@@ -218,7 +219,8 @@ class GameLoop:
             player (Player): player object to check hand
 
         Returns:
-            bool: if the player has won, by having no cards in hand. True for won, False not not won.
+            bool: if the player has won, by having no cards in hand.
+            True for won, False not not won.
         """
         if player.get_num_of_cards() == 0:
             return True
