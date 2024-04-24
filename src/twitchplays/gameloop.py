@@ -14,7 +14,7 @@ from .pile import Pile
 from .player import Player
 from .twitch_crowdsourcing import TwitchCrowdsourcing
 
-FPS = 8
+FPS = 24
 NUMBER_OF_STARTING_CARDS = 7
 
 
@@ -230,17 +230,22 @@ class GameLoop:
 
     def _render_game(self) -> None:
         """
-        function that calls for game to be rendered
-        Spends 1 second just rendering to give a pause between actions,
-        without pausing rendering
+        If rendering during countdown, render as normal
+        Otherise implement a 0.5 second break in game logic to allow
+        time for uses to see cards being placed or picked up
         """
-        start_time = time.time()
-        while time.time() - start_time < 0.2:
+
+        if self._countdown.is_countdown_running():
             self._renderer.render(self._deck, self._pile, self._chat, self._ai)
-            if self._countdown.is_countdown_running():
-                self._renderer.render_time_remaining(
-                    self._countdown.get_seconds_remaining()
-                )
+            self._renderer.render_time_remaining(
+                self._countdown.get_seconds_remaining()
+            )
+            self._clock.tick(FPS)
+            return
+
+        start_time: float = time.time()
+        while time.time() - start_time < 0.5:
+            self._renderer.render(self._deck, self._pile, self._chat, self._ai)
             self._clock.tick(FPS)
 
     @staticmethod

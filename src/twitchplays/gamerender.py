@@ -37,8 +37,8 @@ class GameRenderer:
         for index in range(num_of_cards):
             img = playing_hand[index].get_card_image()
             gap: float = 1.2
-            img_width = img.get_width()
-            img_height = img.get_height()
+            img_width: int = img.get_width()
+            img_height: int = img.get_height()
             x: int = (
                 (self._window_width / 2)
                 - ((num_of_cards / 2) * (img_width * gap))
