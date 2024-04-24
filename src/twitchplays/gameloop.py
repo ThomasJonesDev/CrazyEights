@@ -173,7 +173,7 @@ class GameLoop:
         for tcs_answer in tcs_answers:
             # conver card var to Card
             temp: tuple[int, str] = (
-                self._get_val_of_tuple_card(tcs_answer[0]),
+                self._change_card_str_val_to_int(tcs_answer[0]),
                 tcs_answer[1],
             )
             card: Card | None = self._chat.get_card(temp)
@@ -244,8 +244,8 @@ class GameLoop:
             self._clock.tick(FPS)
 
     @staticmethod
-    def _get_val_of_tuple_card(value: str) -> int:
-        """For the court cards (Jack, Queen, King, Ace) return the value
+    def _change_card_str_val_to_int(value: str) -> int:
+        """Given a card value as a string returns the value as a int
 
         Args:
             value (str): e.g. A
