@@ -53,24 +53,3 @@ class Card:
             Surface: image of playing card
         """
         return self._card_image
-
-    @staticmethod
-    def get_court_card_value(value: str) -> int:
-        """For the court cards (Jack, Queen, King, Ace) return the value
-
-        Args:
-            value (str): e.g. A
-
-        Returns:
-            int: e.g. 1
-        """
-        value = value.upper()
-        if value == "A":
-            return 1
-        elif value == "J":
-            return 11
-        elif value == "Q":
-            return 12
-        elif value == "K":
-            return 13
-        return int(value)

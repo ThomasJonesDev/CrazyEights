@@ -166,15 +166,17 @@ class GameLoop:
         Returns:
             Card: card object to be played
         """
-        tcs_answers: list[tuple[int, str]] = self._tcs.get_submitted_answers()
-        if len(tcs_answers) > 0:
-            tcs_answer = tcs_answers[0]
-        else:
+        tcs_answers: list[tuple[str, str]] = self._tcs.get_submitted_answers()
+        if len(tcs_answers) == 0:
             return self._get_random_card_to_play()
 
         for tcs_answer in tcs_answers:
             # conver card var to Card
-            card: Card | None = self._chat.get_card(tcs_answer)
+            temp: tuple[int, str] = (
+                self._get_val_of_tuple_card(tcs_answer[0]),
+                tcs_answer[1],
+            )
+            card: Card | None = self._chat.get_card(temp)
             if card is not None:
                 if CrazyEights.can_card_be_played(card, self._pile.get_top_card()):
                     return card
@@ -240,3 +242,24 @@ class GameLoop:
                     self._countdown.get_seconds_remaining()
                 )
             self._clock.tick(FPS)
+
+    @staticmethod
+    def _get_val_of_tuple_card(value: str) -> int:
+        """For the court cards (Jack, Queen, King, Ace) return the value
+
+        Args:
+            value (str): e.g. A
+
+        Returns:
+            int: e.g. 1
+        """
+        value = value.upper()
+        if value == "A":
+            return 1
+        elif value == "J":
+            return 11
+        elif value == "Q":
+            return 12
+        elif value == "K":
+            return 13
+        return int(value)

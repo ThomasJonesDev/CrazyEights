@@ -39,7 +39,7 @@ class TwitchCrowdsourcing:
         self._twitch_connection.send_to_chat(START_SUBMITTING_MSG)
         self._twitch_connection.clear_irc_msgs()
 
-    def get_submitted_answers(self) -> list[tuple[int, str]]:
+    def get_submitted_answers(self) -> list[tuple[str, str]]:
         """Gets raw data from Twitch, call functions to filter and parse data, returns cards in format that the game can use
 
         Returns:
@@ -61,7 +61,7 @@ class TwitchCrowdsourcing:
         return TwitchCrowdsourcing._convert_card_str_to_tuple(orderd_moves)
 
     @staticmethod
-    def _convert_card_str_to_tuple(card_list: list[str]) -> list[tuple[int, str]]:
+    def _convert_card_str_to_tuple(card_list: list[str]) -> list[tuple[str, str]]:
         """Takes the string representation of a card and turns it into a tuple
         e.g. "5S" -> (5, "S")
 
@@ -71,12 +71,12 @@ class TwitchCrowdsourcing:
         Returns:
             list[tuple[int, str]]: A list of cards represented by tuples e.g. (5,"S")
         """
-        tuple_list: list[tuple[int, str]] = []
+        tuple_list: list[tuple[str, str]] = []
         for card in card_list:
             if len(card) == 3:
-                tuple_list.append((10, card[2]))
+                tuple_list.append(("10", card[2]))
             else:
-                tuple_list.append((int(card[0]), card[1]))
+                tuple_list.append((card[0], card[1]))
 
         return tuple_list
 
