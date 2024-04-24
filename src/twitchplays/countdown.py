@@ -8,7 +8,7 @@ class Countdown:
     def __init__(self) -> None:
         """Assign inital values"""
         self._start_time: float = -1
-        self._countdown_duration: float = 3
+        self._countdown_duration: float = 30
         self._countdown_active: bool = False
 
     def start_countdown(self) -> None:
