@@ -47,13 +47,17 @@ class TwitchCrowdsourcing:
         """
         self._twitch_connection.send_to_chat(STOP_SUBMITTING_MSG)
         messages: list[str] = self._twitch_connection.get_irc_msgs()
+        print(messages)
         parsed_input: dict[str, str] = TwitchCrowdsourcing._parse_input(messages)
+        print(parsed_input)
         filtered_input: dict[str, str] = TwitchCrowdsourcing._filter_answers(
             parsed_input
         )
+        print(filtered_input)
         orderd_moves: list[str] = TwitchCrowdsourcing._get_list_of_choosen_cards(
             filtered_input
         )
+        print(orderd_moves)
         return TwitchCrowdsourcing._convert_card_str_to_tuple(orderd_moves)
 
     @staticmethod
@@ -136,7 +140,7 @@ class TwitchCrowdsourcing:
             split_message: list[str] = message.split(" :")
             temp: list[str] = split_message[0].split("!")
             username: str = temp[0]
-            user_message: str = split_message[1]
+            user_message: str = split_message[1].rstrip()  # rstrip remove \r\n
             username = username[1:]
             parsed_input[username] = user_message
 
