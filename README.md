@@ -1,6 +1,6 @@
-# TwitchPlays
+# Crazy Eights
 
-A game of crazy eights that you can stream to your twitch chat, which they can then interact with using the chat.
+A game of crazy eights that you can stream to your twitch chat, which they can then interact with using the chat. This was my Honour year project.
 
 ## Installation
 
@@ -11,11 +11,11 @@ sudo apt upgrade
 sudo apt install python3.11
 ```
 
-Then copy Twitch plays onto your computer.
+Then copy Crazy eights onto your computer.
 
 Enter the working directory
 ```bash
-cd TwitchPlays
+cd CrazyEights
 ```
 
 Next set up a virtual enviroment for Twitch Plays to run in.
