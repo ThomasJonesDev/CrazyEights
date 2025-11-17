@@ -88,7 +88,7 @@ class GameLoop:
 
     def _close_program(self) -> None:
         """Shuts down the twitch IRC connection then close program & threads"""
-        self._tcs.diconnect()
+        self._tcs.disconnect()
         os._exit(0)  # used to close listening thread
 
     def _init_new_game(self) -> None:
