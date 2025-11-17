@@ -169,6 +169,6 @@ class TwitchCrowdsourcing:
 
         return filtered_dictionary
 
-    def diconnect(self) -> None:
-        """Tells twitch_connection to diconnect from Twitch IRC servers"""
+    def disconnect(self) -> None:
+        """Tells twitch_connection to disconnect from Twitch IRC servers"""
         self._twitch_connection.disconnect()
